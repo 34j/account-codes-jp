@@ -10,4 +10,4 @@ app = typer.Typer()
 def list() -> None:
     """List accounts."""
     df, G = get_all_account()
-    print(nx.write_network_text(G))
+    nx.write_network_text(G, with_labels=True, max_depth=20)

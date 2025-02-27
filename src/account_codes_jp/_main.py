@@ -137,6 +137,7 @@ def to_bool_or_nan(
 ) -> "pd.Series[Any]":
     true_idx = x.isin(true_values)
     false_idx = x.isin(false_values)
+    x = x.copy()
     x[true_idx] = True
     x[false_idx] = False
     x[~true_idx & ~false_idx] = pd.NA
@@ -203,15 +204,16 @@ def get_all_account(
     G = nx.DiGraph()
     ancestors: list[Any] = []
     for k, row in df.iterrows():
-        G.add_node(row["label"], **row.to_dict())
+        if row["label"] not in G.nodes:
+            G.add_node(k, **row.to_dict())
         if row["depth"] > len(ancestors) + 1:
             raise RuntimeError(
                 f"{k}: depth: {row['depth']}, depth_prev: {len(ancestors)}"
             )
-        ancestors = ancestors[: row["depth"] - 1]
+        ancestors = ancestors[: row["depth"]]
         if ancestors:
-            G.add_edge(ancestors[-1], row["label"])
-        ancestors.append(row["label"])
+            G.add_edge(ancestors[-1], k)
+        ancestors.append(k)
     return df, G
 
 
