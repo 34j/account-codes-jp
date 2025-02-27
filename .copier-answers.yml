@@ -1,7 +1,7 @@
 # Changes here will be overwritten by Copier
 _commit: 85694ff
 _src_path: gh:34j/pypackage-template
-add_me_as_contributor: true
+add_me_as_contributor: false
 cli_name: account-codes-jp
 copyright_year: '2025'
 documentation: true
@@ -9,7 +9,7 @@ email: 34j.github@proton.me
 full_name: 34j
 github_username: 34j
 has_cli: true
-initial_commit: true
+initial_commit: false
 is_django_package: false
 open_source_license: GNU General Public License v3
 open_with_editor: true
@@ -17,7 +17,7 @@ package_name: account_codes_jp
 project_name: Account Codes JP
 project_short_description: e-Taxの勘定科目コード表のラッパー
 project_slug: account-codes-jp
-run_poetry_install: true
-setup_github: true
-setup_pre_commit: true
+run_poetry_install: false
+setup_github: false
+setup_pre_commit: false
 
