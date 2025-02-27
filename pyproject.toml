@@ -30,9 +30,11 @@ packages = [
 account-codes-jp = "account_codes_jp.cli:app"
 
 [tool.poetry.dependencies]
-python = "^3.9"
-rich = ">=10"
-typer = { extras = [ "all" ], version = "^0.9.0" }
+python = "^3.10"
+typer = "^0.15.1"
+rich = "^13.9.4"
+pandas = "^2.2.3"
+networkx = "^3.4.2"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.0"
@@ -69,6 +71,7 @@ lint.ignore = [
   "D104", # Missing docstring in public package
   "D107", # Missing docstring in `__init__`
   "D401", # First line of docstring should be in imperative mood
+  "RUF001"
 ]
 lint.per-file-ignores."conftest.py" = [ "D100" ]
 lint.per-file-ignores."docs/conf.py" = [ "D100" ]

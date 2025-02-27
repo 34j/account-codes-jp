@@ -1,12 +1,13 @@
+import networkx as nx
 import typer
-from rich import print
 
-from .main import add
+from ._main import get_all_account
 
 app = typer.Typer()
 
 
 @app.command()
-def main(n1: int, n2: int) -> None:
-    """Add the arguments and print the result."""
-    print(add(n1, n2))
+def list() -> None:
+    """List accounts."""
+    df, G = get_all_account()
+    print(nx.write_network_text(G))
