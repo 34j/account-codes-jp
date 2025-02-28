@@ -46,6 +46,47 @@ Install this via pip (or your favourite package manager):
 
 `pip install account-codes-jp`
 
+## Usage
+
+```shell
+$ account-codes-jp list --industry "一般商工業"
+╟── 貸借対照表[タイトル]/貸借対照表/jppfs_cor:BalanceSheetAbstract
+╎   ├─╼ 貸借対照表/貸借対照表/jppfs_cor:BalanceSheetTable
+╎   └─╼ 貸借対照表/貸借対照表/jppfs_cor:BalanceSheetLineItems
+╎       ├─╼ 資産の部[タイトル]/資産の部/jppfs_cor:AssetsAbstract
+╎       │   ├─╼ 流動資産[タイトル]/流動資産/jppfs_cor:CurrentAssetsAbstract
+╎       │   │   ├─╼ 現金及び預金/現金及び預金/jppfs_cor:CashAndDeposits
+...
+```
+
+## Notes
+
+本パッケージは単なるラッパーであり、EDINETタクソノミを含みませんが、念の為「EDINETタクソノミの知的所有権について」を引用いたします。
+
+## [EDINETタクソノミの知的所有権について（「本文書」）](https://www.fsa.go.jp/search/EDINET_Taxonomy_Legal_Statement.html)
+
+### 著作権
+
+「EDINETタクソノミ」は、金融商品取引法に基づく有価証券報告書等の開示書類に関する電子開示システム（EDINET）に開示書類をXBRL形式により電子的に提出するために金融庁が開発したものであり、著作権の対象となっています。当該著作権は日本国著作権法及び国際条約により保護されています。
+
+なお、金融庁の事前の許可なくEDINETタクソノミの全部又は一部について改変、修正又は翻訳を行うことはできません。EDINETタクソノミには、XBRL International Inc.（以下「XII」という。）の著作権に帰属する内容が一部含まれており、当該内容は、XIIの許諾に基づきEDINETタクソノミ中に作成されています。
+
+本文書を一体とし、かつ、次の文言を用いて出所を明示することを条件に、EDINETタクソノミの全部又は一部の引用、転載、複製、譲渡、貸与、公衆送信又は配布を行うことができます：
+
+© Copyright 2014 Financial Services Agency, The Japanese Government
+
+### 保証責任の否認
+
+EDINETタクソノミは、「現状有姿」にて提供され、金融庁及びXIIは、明示的であるか暗黙的であるかを問わず、商業利用への適合性、特定目的への適合性若しくは所有権の保証又はEDINETタクソノミの使用が第三者の特許権、著作権、トレードマークその他の権利を侵害しないことの保証その他のあらゆる保証の責任を否認します。
+
+### 免責事項
+
+契約、不法行為、保証その他の方法であるかを問わず、EDINETタクソノミ若しくはその関連ファイルを使用すること、又はいかなる種類の内容物の動作若しくは導入により発生する、代替品若しくは代替サービスの調達費用又は逸失利益又は使用の喪失又はデータの喪失又は直接、間接、結果的、偶発的、懲罰的若しくは特別の損害について、当該損害の可能性についての事前の通知の有無にかかわらず、金融庁及びXIIは、いかなる利用者又は第三者に対しても責任を負いません。
+
+### 使用許諾
+
+上記の条件を承諾し、かつ、XIIの知的財産権ポリシー（www.xbrl.org/legal）に準拠して使用する場合に限り、EDINETタクソノミを無償で使用することを許諾します。
+
 ## Contributors ✨
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):

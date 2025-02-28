@@ -76,8 +76,12 @@ lint.ignore = [
   "D104", # Missing docstring in public package
   "D107", # Missing docstring in `__init__`
   "D401", # First line of docstring should be in imperative mood
+  # This is a Japanese project lol
+  "E712",
   "RUF001",
-  "E712"
+  "RUF002",
+  "D400", 
+  "D415"
 ]
 lint.per-file-ignores."conftest.py" = [ "D100" ]
 lint.per-file-ignores."docs/conf.py" = [ "D100" ]

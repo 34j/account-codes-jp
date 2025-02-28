@@ -8,7 +8,6 @@ import networkx as nx
 import numpy as np
 import pandas as pd
 from requests_cache import CachedSession
-from strenum import StrEnum
 
 # from strictly_typed_pandas import DataSet
 
@@ -195,8 +194,32 @@ def to_bool_or_nan(
 
 def get_etax_accounts(
     industry: Industry | None = None,
-    debug_unique: bool = True,
+    debug_unique: bool = False,
+    skip_non_line_elements: bool = True,
 ) -> pd.DataFrame:
+    """
+    EDINETの勘定科目リストのDataFrameを取得する
+
+    Parameters
+    ----------
+    industry : Industry | None, optional
+        EDINETで設定されている業種目（23業種）, by default None
+        If None, all industries are returned.
+    debug_unique : bool, optional
+        Whether to print unique values per column,
+        by default False
+    skip_non_line_elements : bool, optional
+        Whether to skip non-line elements,
+        which was introduced due to the reference
+        being the copy of EDINET account list,
+        by default True
+
+    Returns
+    -------
+    pd.DataFrame
+        DataFrame representation of the EDINET account list
+
+    """
     path = Path("~/.cache/aoiro/aoiro").expanduser()
     path.parent.mkdir(parents=True, exist_ok=True)
     with CachedSession(path) as s:
@@ -250,46 +273,32 @@ def get_etax_accounts(
     )
     if debug_unique:
         for k, col in df.items():
-            print(f"{k}: {col.unique()[:100].tolist()}")
+            LOG.debug(f"{k}: {col.unique()[:100].tolist()}")
+    if skip_non_line_elements:
+        df = df[df["depth"] > 0]
+        df = df[~df["element"].str.contains("Table")]
     if industry is not None:
         df = df[df["industry"] == industry]
     for k in ["total", "title"]:
         df[k] = to_bool_or_nan(df[k], ["○"], [np.nan])
     df["duration"] = to_bool_or_nan(df["duration"], ["duration"], ["instant"])
     df["debit"] = to_bool_or_nan(df["debit"], ["debit"], ["credit"])
-
     return df
 
 
 def etax_accounts_as_graph(df: pd.DataFrame) -> nx.DiGraph:
     G = nx.DiGraph()
     ancestors: list[Any] = []
+    min_depth = df["depth"].min()
     for k, row in df.iterrows():
         if row["label"] not in G.nodes:
             G.add_node(k, **row.to_dict())
-        if row["depth"] > len(ancestors) + 1:
+        if row["depth"] > len(ancestors) + 1 + min_depth:
             raise RuntimeError(
                 f"{k}: depth: {row['depth']}, depth_prev: {len(ancestors)}"
             )
-        ancestors = ancestors[: row["depth"]]
+        ancestors = ancestors[: row["depth"] - min_depth]
         if ancestors:
             G.add_edge(ancestors[-1], k)
         ancestors.append(k)
     return G
-
-
-class AccountType(StrEnum):
-    Assets = "資産"
-    Liabilities = "負債"
-    Equity = "純資産"
-    Revenue = "収益"
-    Expenses = "費用"
-    Sundry = "諸口"
-
-    @property
-    def is_positive(self) -> bool:
-        return self in (AccountType.Assets, AccountType.Revenue)
-
-    @property
-    def is_static(self) -> bool:
-        return self in (AccountType.Equity, AccountType.Liabilities, AccountType.Equity)
