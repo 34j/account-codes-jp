@@ -6,7 +6,7 @@ from rich import print
 
 from ._main import Industry, etax_account_as_graph, get_etax_accounts
 
-app = cyclopts.App()
+app = cyclopts.App(name="account-codes-jp")
 
 
 @app.command()

@@ -1,6 +1,5 @@
-from account_codes_jp.main import add
+from account_codes_jp import get_etax_accounts
 
 
-def test_add():
-    """Adding two number works as expected."""
-    assert add(1, 1) == 2
+def test_get():
+    get_etax_accounts()

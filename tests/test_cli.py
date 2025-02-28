@@ -1,12 +1,10 @@
-from typer.testing import CliRunner
+from click.testing import CliRunner
 
 from account_codes_jp.cli import app
 
 runner = CliRunner()
 
 
-def test_help():
+def test_list() -> None:
     """The help message includes the CLI name."""
-    result = runner.invoke(app, ["--help"])
-    assert result.exit_code == 0
-    assert "Add the arguments and print the result" in result.stdout
+    app("list")
