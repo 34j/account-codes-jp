@@ -2,7 +2,7 @@ from collections.abc import Sequence
 from io import BytesIO
 from logging import getLogger
 from pathlib import Path
-from typing import Any, Literal, Protocol, TypeVar
+from typing import Any, Literal, Protocol
 
 import networkx as nx
 import numpy as np
@@ -13,9 +13,6 @@ from requests_cache import CachedSession
 
 LOG = getLogger(__name__)
 
-SUNDRY = "諸口"
-Account = TypeVar("Account", bound=str)
-AccountSundry = Literal["諸口"]
 Industry = Literal[
     "一般商工業",
     "建設業",
@@ -287,6 +284,26 @@ def get_etax_accounts(
 
 
 def etax_accounts_as_graph(df: pd.DataFrame) -> nx.DiGraph:
+    """
+    get_etax_accounts()の結果をnx.DiGraphに変換する
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        The DataFrame representation of
+        the EDINET account list
+
+    Returns
+    -------
+    nx.DiGraph
+        Tree representation of the EDINET account list
+
+    Raises
+    ------
+    AssertionError
+        If the "depth" values are inconsistent
+
+    """
     G = nx.DiGraph()
     ancestors: list[Any] = []
     min_depth = df["depth"].min()
@@ -294,7 +311,7 @@ def etax_accounts_as_graph(df: pd.DataFrame) -> nx.DiGraph:
         if row["label"] not in G.nodes:
             G.add_node(k, **row.to_dict())
         if row["depth"] > len(ancestors) + 1 + min_depth:
-            raise RuntimeError(
+            raise AssertionError(
                 f"{k}: depth: {row['depth']}, depth_prev: {len(ancestors)}"
             )
         ancestors = ancestors[: row["depth"] - min_depth]

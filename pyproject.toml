@@ -27,7 +27,7 @@ packages = [
 "Changelog" = "https://github.com/34j/account-codes-jp/blob/main/CHANGELOG.md"
 
 [tool.poetry.scripts]
-account-codes-jp = "account_codes_jp.cli:app"
+account-codes-jp = "account_codes_jp.cli:app.meta"
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -39,6 +39,7 @@ cyclopts = "^3.9.0"
 requests-cache = "^1.2.1"
 openpyxl = "^3.1.5"
 strenum = "^0.4.15"
+pyyaml = "^6.0.2"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.0"
