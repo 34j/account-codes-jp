@@ -61,13 +61,13 @@ class ETaxAccountProtocol(Protocol):
     """用途区分、財務諸表区分及び業種区分のラベル（日本語）"""
     label_category_en: str
     """用途区分、財務諸表区分及び業種区分のラベル（英語）"""
-    prefix: str
+    prefix: Literal["jppfs_cor"]
     """名前空間プレフィックス"""
     element: str
     """要素名"""
-    type: str
+    type: Literal["xbrli:stringItemType", "xbrli:monetaryItemType"]
     """データ型"""
-    substitution_group: str
+    substitution_group: Literal["xbrli:item", "xbrldt:hypercubeItem"]
     """代替グループ"""
     duration: bool
     """持続かどうか（期間時点区分）
@@ -91,11 +91,19 @@ class ETaxAccountProtocol(Protocol):
     top       True
     freq      3736
     dtype: object
+    >>> from account_codes_jp import get_etax_accounts
+    >>> df = get_etax_accounts()
+    >>> df.loc[(df["title"] != df["abstract"]), "label"].unique()
+    array(['貸借対照表'], dtype=object)
     """
     depth: Literal[0, 1, 2, 3, 4, 5, 6, 7]
     """階層の深さ"""
     title: bool
-    """EDINETの勘定科目リストで冗長ラベルがタイトル項目"""
+    """EDINETの勘定科目リストで冗長ラベルがタイトル項目
+    >>> from account_codes_jp import get_etax_accounts
+    >>> df = get_etax_accounts()
+    >>> df.loc[(df["title"] != df["abstract"]), "label"].unique()
+    array(['貸借対照表'], dtype=object)"""
     total: bool
     """EDINETの勘定科目リストで用途区分が合計と使用できる"""
     account_type: Literal[
@@ -118,6 +126,18 @@ class ETaxAccountProtocol(Protocol):
         "利益剰余金",
         "評価・換算差額等",
         "新株予約権",
+        "売上高",
+        "売上原価",
+        "販売費及び一般管理費(売上原価)",
+        "損益",
+        "その他",
+        "販売費及び一般管理費",
+        "営業外収益",
+        "営業外費用",
+        "特別利益",
+        "特別損失",
+        "収益",
+        "費用",
     ]
     """EDINETの勘定科目リストで使用されている勘定科目を財務諸表規則に基づき区分したもの"""
     code: str
@@ -146,6 +166,15 @@ class ETaxAccountProtocol(Protocol):
         "利益剰余金",
         "評価・換算差額等",
         "新株予約権",
+        "売上高",
+        "売上原価",
+        "損益",
+        "その他",
+        "販売費及び一般管理費",
+        "営業外収益",
+        "営業外費用",
+        "特別利益",
+        "特別損失",
     ]
     """e-Taxの勘定科目を財務諸表規則に基づき区分したもの"""
 
@@ -166,24 +195,30 @@ def to_bool_or_nan(
 
 def get_etax_accounts(
     industry: Industry | None = None,
-    debug_unique: bool = False,
+    debug_unique: bool = True,
 ) -> pd.DataFrame:
     path = Path("~/.cache/aoiro/aoiro").expanduser()
     path.parent.mkdir(parents=True, exist_ok=True)
     with CachedSession(path) as s:
-        URL = (
-            "https://www.e-tax.nta.go.jp/hojin/gimuka/csv_jyoho3/1/BScodeall_2019.xlsx"
+        dfs = []
+        URLS = (
+            "https://www.e-tax.nta.go.jp/hojin/gimuka/csv_jyoho3/1/BScodeall_2019.xlsx",
+            "https://www.e-tax.nta.go.jp/hojin/gimuka/csv_jyoho3/2/PLcodeall_2019.xlsx",
         )
-        r = s.get(URL)
-        with BytesIO(r.content) as f:
-            df = pd.read_excel(
-                f,
-                sheet_name="貸借対照表\u3000勘定科目コード表(2019年版)",
-                skiprows=2,
-                na_values=["-"],
-                true_values=["true"],
-                false_values=["false"],
-            )
+        for URL in URLS:
+            r = s.get(URL)
+            with BytesIO(r.content) as f:
+                dfs.append(
+                    pd.read_excel(
+                        f,
+                        sheet_name=1,
+                        skiprows=2,
+                        na_values=["-"],
+                        true_values=["true"],
+                        false_values=["false"],
+                    )
+                )
+    df = pd.concat(dfs, ignore_index=True)
     df.rename(
         columns={
             "業種": "industry",
@@ -213,6 +248,9 @@ def get_etax_accounts(
         inplace=True,
         errors="raise",
     )
+    if debug_unique:
+        for k, col in df.items():
+            print(f"{k}: {col.unique()[:100].tolist()}")
     if industry is not None:
         df = df[df["industry"] == industry]
     for k in ["total", "title"]:
@@ -220,13 +258,10 @@ def get_etax_accounts(
     df["duration"] = to_bool_or_nan(df["duration"], ["duration"], ["instant"])
     df["debit"] = to_bool_or_nan(df["debit"], ["debit"], ["credit"])
 
-    if debug_unique:
-        for k, col in df.items():
-            LOG.debug(f"{k}: {col.unique()[:100].tolist()}")
     return df
 
 
-def etax_account_as_graph(df: pd.DataFrame) -> nx.DiGraph:
+def etax_accounts_as_graph(df: pd.DataFrame) -> nx.DiGraph:
     G = nx.DiGraph()
     ancestors: list[Any] = []
     for k, row in df.iterrows():

@@ -6,7 +6,7 @@ from ._main import (
     AccountType,
     ETaxAccountProtocol,
     Industry,
-    etax_account_as_graph,
+    etax_accounts_as_graph,
     get_etax_accounts,
 )
 
@@ -16,6 +16,6 @@ __all__ = [
     "AccountType",
     "ETaxAccountProtocol",
     "Industry",
-    "etax_account_as_graph",
+    "etax_accounts_as_graph",
     "get_etax_accounts",
 ]
