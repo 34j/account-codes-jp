@@ -1,5 +1,4 @@
 from collections.abc import Sequence
-from enum import StrEnum
 from io import BytesIO
 from logging import getLogger
 from pathlib import Path
@@ -9,7 +8,9 @@ import networkx as nx
 import numpy as np
 import pandas as pd
 from requests_cache import CachedSession
-from strictly_typed_pandas import DataSet
+from strenum import StrEnum
+
+# from strictly_typed_pandas import DataSet
 
 LOG = getLogger(__name__)
 
@@ -166,7 +167,7 @@ def to_bool_or_nan(
 def get_etax_accounts(
     industry: Industry | None = None,
     debug_unique: bool = False,
-) -> DataSet[ETaxAccountProtocol]:
+) -> pd.DataFrame:
     path = Path("~/.cache/aoiro/aoiro").expanduser()
     path.parent.mkdir(parents=True, exist_ok=True)
     with CachedSession(path) as s:
