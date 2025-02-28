@@ -1,13 +1,31 @@
-import networkx as nx
-import typer
+from pathlib import Path
 
-from ._main import get_all_account
+import cyclopts
+from networkx.readwrite.text import generate_network_text
+from rich import print
 
-app = typer.Typer()
+from ._main import Industry, etax_account_as_graph, get_etax_accounts
+
+app = cyclopts.App()
 
 
 @app.command()
-def list() -> None:
+def list(industry: Industry | None = None) -> None:
     """List accounts."""
-    df, G = get_all_account()
-    nx.write_network_text(G, with_labels=True, max_depth=20)
+    df = get_etax_accounts(industry)
+    # set red
+    df.loc[df["abstract"] == True, "label"] = (
+        "[italic]" + df["label"] + "[/italic][抽象]"
+    )
+    df.loc[df["title"] == True, "label"] = "[red]" + df["label"] + "[/red][タイトル]"
+    df.loc[df["total"] == True, "label"] = "[yellow]" + df["label"] + "[/yellow][計]"
+    df.loc[df["duration"] == True, "label"] = df["label"] + "[期間]"
+    G = etax_account_as_graph(df)
+    for line in generate_network_text(G, with_labels=True, max_depth=20):
+        print(line)
+
+
+def export(path: Path, industry: Industry | None = None) -> None:
+    """Export accounts."""
+    df = get_etax_accounts(industry)
+    df.to_csv(path, index=False)

@@ -9,40 +9,42 @@ import networkx as nx
 import numpy as np
 import pandas as pd
 from requests_cache import CachedSession
+from strictly_typed_pandas import DataSet
 
 LOG = getLogger(__name__)
 
-Account = TypeVar("Account", bound=str)
 SUNDRY = "諸口"
+Account = TypeVar("Account", bound=str)
 AccountSundry = Literal["諸口"]
+Industry = Literal[
+    "一般商工業",
+    "建設業",
+    "銀行・信託業",
+    "銀行・信託業（特定取引勘定設置銀行）",
+    "建設保証業",
+    "第一種金融商品取引業",
+    "生命保険業",
+    "損害保険業",
+    "鉄道事業",
+    "海運事業",
+    "高速道路事業",
+    "電気通信事業",
+    "電気事業",
+    "ガス事業",
+    "資産流動化業",
+    "投資運用業",
+    "投資業",
+    "特定金融業",
+    "社会医療法人",
+    "学校法人",
+    "商品先物取引業",
+    "リース事業",
+    "投資信託受益証券",
+]
 
 
 class ETaxAccountProtocol(Protocol):
-    industry: Literal[
-        "一般商工業",
-        "建設業",
-        "銀行・信託業",
-        "銀行・信託業（特定取引勘定設置銀行）",
-        "建設保証業",
-        "第一種金融商品取引業",
-        "生命保険業",
-        "損害保険業",
-        "鉄道事業",
-        "海運事業",
-        "高速道路事業",
-        "電気通信事業",
-        "電気事業",
-        "ガス事業",
-        "資産流動化業",
-        "投資運用業",
-        "投資業",
-        "特定金融業",
-        "社会医療法人",
-        "学校法人",
-        "商品先物取引業",
-        "リース事業",
-        "投資信託受益証券",
-    ]
+    industry: Industry
     """EDINETで設定されている業種目（23業種）"""
     grounded: bool
     """会計基準及び業法等の法令規則に設定の根拠を有するか"""
@@ -66,8 +68,8 @@ class ETaxAccountProtocol(Protocol):
     """データ型"""
     substitution_group: str
     """代替グループ"""
-    instant: bool
-    """即時かどうか（期間時点区分）"""
+    duration: bool
+    """持続かどうか（期間時点区分）"""
     debit: bool
     """借方かどうか（貸借区分）"""
     abstract: bool
@@ -144,9 +146,10 @@ def to_bool_or_nan(
     return x
 
 
-def get_all_account(
+def get_etax_accounts(
+    industry: Industry | None = None,
     debug_unique: bool = False,
-) -> tuple[Sequence[ETaxAccountProtocol], nx.DiGraph]:
+) -> DataSet[ETaxAccountProtocol]:
     path = Path("~/.cache/aoiro/aoiro").expanduser()
     path.parent.mkdir(parents=True, exist_ok=True)
     with CachedSession(path) as s:
@@ -177,7 +180,7 @@ def get_all_account(
             "要素名": "element",
             "type": "type",
             "substitutionGroup": "substitution_group",
-            "periodType": "instant",
+            "periodType": "duration",
             "balance": "debit",
             "abstract": "abstract",
             "depth": "depth",
@@ -192,15 +195,20 @@ def get_all_account(
         inplace=True,
         errors="raise",
     )
+    if industry is not None:
+        df = df[df["industry"] == industry]
     for k in ["total", "title"]:
         df[k] = to_bool_or_nan(df[k], ["○"], [np.nan])
-    df["instant"] = to_bool_or_nan(df["instant"], ["instant"], ["duration"])
+    df["duration"] = to_bool_or_nan(df["duration"], ["duration"], ["instant"])
     df["debit"] = to_bool_or_nan(df["debit"], ["debit"], ["credit"])
 
     if debug_unique:
         for k, col in df.items():
             LOG.debug(f"{k}: {col.unique()[:100].tolist()}")
+    return df
 
+
+def etax_account_as_graph(df: pd.DataFrame) -> nx.DiGraph:
     G = nx.DiGraph()
     ancestors: list[Any] = []
     for k, row in df.iterrows():
@@ -214,7 +222,7 @@ def get_all_account(
         if ancestors:
             G.add_edge(ancestors[-1], k)
         ancestors.append(k)
-    return df, G
+    return G
 
 
 class AccountType(StrEnum):
