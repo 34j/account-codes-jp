@@ -54,7 +54,9 @@ def get_blue_return_accounts_as_graph() -> nx.DiGraph:
         d = safe_load(f)
     G = from_nested_dict(d)
     for n in G.nodes:
-        G.nodes[n]["abstract"] = False
-        G.nodes[n]["title"] = False
+        ancestors = nx.ancestors(G, n)
+        depth = len(ancestors)
+        G.nodes[n]["abstract"] = depth <= 2
+        G.nodes[n]["title"] = depth <= 2
         G.nodes[n]["total"] = False
     return G
