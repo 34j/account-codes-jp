@@ -69,11 +69,28 @@ class ETaxAccountProtocol(Protocol):
     substitution_group: str
     """代替グループ"""
     duration: bool
-    """持続かどうか（期間時点区分）"""
+    """持続かどうか（期間時点区分）
+    >>> from account_codes_jp import get_etax_accounts
+    >>> df = get_etax_accounts()
+    >>> (df["duration"] == df["abstract"]).describe()
+    count     3736
+    unique       1
+    top       True
+    freq      3736
+    dtype: object"""
     debit: bool
     """借方かどうか（貸借区分）"""
     abstract: bool
-    """抽象かどうか"""
+    """抽象かどうか
+    >>> from account_codes_jp import get_etax_accounts
+    >>> df = get_etax_accounts()
+    >>> (df["duration"] == df["abstract"]).describe()
+    count     3736
+    unique       1
+    top       True
+    freq      3736
+    dtype: object
+    """
     depth: Literal[0, 1, 2, 3, 4, 5, 6, 7]
     """階層の深さ"""
     title: bool
