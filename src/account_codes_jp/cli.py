@@ -62,6 +62,10 @@ def export(
 ) -> None:
     """Export accounts."""
     matplotlib.rc("font", family="serif", serif="IPAexGothic")
+    if type == "edinet":
+        plt.figure(figsize=(40, 40))
+    else:
+        plt.figure(figsize=(10, 10))
     if path is None:
         path = Path(type)
     if type == "edinet":
@@ -72,21 +76,32 @@ def export(
         G = get_blue_return_accounts_as_graph()
     else:
         raise ValueError(f"Unknown account type: {type}")
+    top_nodes = [n for n, d in G.in_degree() if d == 0]
+    G.add_node("Root", label="", abstract=None, title=None, total=None)
+    for n in top_nodes:
+        G.add_edge("Root", n)
     # dot layout
     try:
-        layout = nx.nx_agraph.graphviz_layout(G, prog="twopi", args="")
+        layout = nx.nx_agraph.graphviz_layout(G, prog="twopi", args='-Gscale="2.0"')
     except Exception as e:
-        warnings.warn(f"Failed to use twopi layout: {e}", stacklevel=2)
+        warnings.warn(f"Failed to use graphviz layout: {e}", stacklevel=2)
         layout = nx.spring_layout(G)
     nx.draw_networkx(
         G,
         layout,
         with_labels=False,
-        node_color=[d["abstract"] for n, d in G.nodes(data=True)],
+        node_color=[
+            "red" if d["abstract"] else "lightblue" for n, d in G.nodes(data=True)
+        ],
     )
     nx.draw_networkx_labels(
-        G, layout, nx.get_node_attributes(G, "label"), font_family="IPAexGothic"
+        G,
+        layout,
+        nx.get_node_attributes(G, "label"),
+        font_family="IPAexGothic",
+        font_size=8,
     )
+    plt.axis("off")
     plt.savefig(path.with_suffix(".png"))
 
 
