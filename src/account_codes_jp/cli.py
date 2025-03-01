@@ -1,8 +1,12 @@
+import warnings
 from logging import basicConfig
 from pathlib import Path
 from typing import Annotated, Literal
 
 import cyclopts
+import matplotlib
+import matplotlib.pyplot as plt
+import networkx as nx
 from cyclopts import Parameter
 from networkx.readwrite.text import generate_network_text
 from rich import print
@@ -50,10 +54,40 @@ def list(
         print(line)
 
 
-def export(path: Path, industry: Industry | None = None) -> None:
+@app.command
+def export(
+    path: Path | None = None,
+    industry: Industry | None = None,
+    type: Literal["edinet", "blue-return"] = "edinet",
+) -> None:
     """Export accounts."""
-    df = get_etax_accounts(industry)
-    df.to_csv(path, index=False)
+    matplotlib.rc("font", family="serif", serif="IPAexGothic")
+    if path is None:
+        path = Path(type)
+    if type == "edinet":
+        df = get_etax_accounts(industry)
+        df.to_csv(path.with_suffix(".csv"), index=False)
+        G = etax_accounts_as_graph(df)
+    elif type == "blue-return":
+        G = get_blue_return_accounts_as_graph()
+    else:
+        raise ValueError(f"Unknown account type: {type}")
+    # dot layout
+    try:
+        layout = nx.nx_agraph.graphviz_layout(G, prog="twopi", args="")
+    except Exception as e:
+        warnings.warn(f"Failed to use twopi layout: {e}", stacklevel=2)
+        layout = nx.spring_layout(G)
+    nx.draw_networkx(
+        G,
+        layout,
+        with_labels=False,
+        node_color=[d["abstract"] for n, d in G.nodes(data=True)],
+    )
+    nx.draw_networkx_labels(
+        G, layout, nx.get_node_attributes(G, "label"), font_family="IPAexGothic"
+    )
+    plt.savefig(path.with_suffix(".png"))
 
 
 @app.meta.default
