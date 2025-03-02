@@ -158,14 +158,18 @@ def export(
             for n, d in G.nodes(data=True)
         ],
     )
+    path_effects = [
+        patheffects.withStroke(linewidth=3, foreground="white", capstyle="round")
+    ]
     draw_networkx_labels_rotated(
         layout,
         nx.get_node_attributes(G, "label"),
-        path_effects=[
-            patheffects.withStroke(linewidth=3, foreground="white", capstyle="round")
-        ],
+        path_effects=path_effects,
     )
-    plt.title(f"{'EDINET' if type == 'edinet' else '青色申告'}の勘定科目")
+    plt.title(
+        f"{'EDINET' if type == 'edinet' else '青色申告'}の勘定科目",
+        path_effects=path_effects,
+    )
     plt.tight_layout()
     plt.savefig(path.with_suffix(".jpg"), dpi=150)
     plt.savefig(path.with_suffix(".png"), transparent=True, dpi=150)
