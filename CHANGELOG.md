@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.1.0 (2025-03-02)
+
+### Features
+
+- Add main feat (#4) ([`46e79c2`](https://github.com/34j/account-codes-jp/commit/46e79c29080171418daecef1da44fb5c162386cf))
+
 ## v0.0.1 (2025-02-28)
 
 ### Bug fixes

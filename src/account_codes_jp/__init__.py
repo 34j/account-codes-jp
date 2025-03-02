@@ -1,4 +1,4 @@
-__version__ = "0.0.1"
+__version__ = "0.1.0"
 
 from ._blue_return import get_blue_return_accounts
 from ._common import Account, AccountSundry, AccountType, get_account_type_factory
