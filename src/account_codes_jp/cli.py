@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
 from cyclopts import Parameter
+from matplotlib import patheffects
 from networkx.readwrite.text import generate_network_text
 from rich import print
 from rich.logging import RichHandler
@@ -116,7 +117,7 @@ def export(
     if type == "edinet":
         plt.figure(figsize=(40, 40))
     else:
-        plt.figure(figsize=(10, 10))
+        plt.figure(figsize=(6.5, 6.5))
     plt.box(False)
     plt.subplots_adjust(left=0, right=1, top=1, bottom=0, wspace=0, hspace=0)
     if path is None:
@@ -143,6 +144,7 @@ def export(
         warnings.warn(f"Failed to use graphviz layout: {e}", stacklevel=2)
         layout = nx.spring_layout(G)
     print("Drawing graph...")
+    nx.draw_networkx_edges(G, layout, edge_color="white", width=3, arrowsize=1)
     nx.draw_networkx(
         G,
         layout,
@@ -155,10 +157,18 @@ def export(
             else "lightblue"
             for n, d in G.nodes(data=True)
         ],
-        node_size=400,
     )
-    draw_networkx_labels_rotated(layout, nx.get_node_attributes(G, "label"))
+    draw_networkx_labels_rotated(
+        layout,
+        nx.get_node_attributes(G, "label"),
+        path_effects=[
+            patheffects.withStroke(linewidth=3, foreground="white", capstyle="round")
+        ],
+    )
+    plt.title(f"{'EDINET' if type == 'edinet' else '青色申告'}の勘定科目")
+    plt.tight_layout()
     plt.savefig(path.with_suffix(".jpg"), dpi=150)
+    plt.savefig(path.with_suffix(".png"), transparent=True, dpi=150)
 
 
 @app.meta.default
