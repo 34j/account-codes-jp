@@ -58,8 +58,8 @@ def get_blue_return_accounts() -> nx.DiGraph:
         ancestors = nx.shortest_path(G, root, n)
         depth = len(ancestors)
         G.nodes[n]["ancestors"] = ancestors
-        G.nodes[n]["abstract"] = depth <= 2
-        G.nodes[n]["title"] = depth <= 2
+        G.nodes[n]["abstract"] = depth <= 4
+        G.nodes[n]["title"] = depth <= 4
         G.nodes[n]["total"] = False
         if len(ancestors) > 2:
             G.nodes[n]["debit"] = ancestors[1] in ["資産", "費用"]
