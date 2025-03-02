@@ -1,12 +1,14 @@
 import warnings
+from collections.abc import Mapping, Sequence
 from logging import basicConfig
 from pathlib import Path
-from typing import Annotated, Literal
+from typing import Annotated, Any, Literal
 
 import cyclopts
 import matplotlib
 import matplotlib.pyplot as plt
 import networkx as nx
+import numpy as np
 from cyclopts import Parameter
 from networkx.readwrite.text import generate_network_text
 from rich import print
@@ -21,7 +23,8 @@ app.meta.group_parameters = cyclopts.Group("Session Parameters", sort_key=0)
 
 @app.command
 def list(
-    type: Literal["edinet", "blue-return"] = "edinet", industry: Industry | None = None
+    type: Literal["edinet", "blue-return"] = "edinet",
+    industry: Industry | None = "一般商工業",
 ) -> None:
     """List accounts."""
     if type == "edinet":
@@ -54,11 +57,59 @@ def list(
         print(line)
 
 
+def draw_networkx_labels_rotated(
+    pos: Mapping[Any, Sequence[float]],
+    labels: Mapping[Any, str],
+    natural: bool = True,
+    **kwargs: Any,
+) -> None:
+    """
+    Draw networkx labels rotated.
+
+    Parameters
+    ----------
+    pos : dict[Any, Sequence[float]]
+        The positions of the nodes
+    labels : dict[Any, str]
+        The labels of the nodes
+    natural : bool
+        Whether to rotate the labels
+        from left to right
+        as much as possible, by default True
+    **kwargs : Any
+        Additional keyword arguments
+        to pass to `plt.text`
+
+    """
+    # see nx.rescale_layout_dict() for how networkx converts the graphviz layout
+    # if nx.rescale_layout_dict() is already applied, center could be (0, 0)
+    center = np.mean([[pos[0], pos[1]] for pos in pos.values()], axis=0)
+    for node, label in labels.items():
+        x, y = pos[node]
+        r = np.atan2(y - center[1], x - center[0])
+        if natural:
+            if r > np.pi / 2:
+                r -= np.pi
+            elif r < -np.pi / 2:
+                r += np.pi
+        plt.text(
+            x,
+            y,
+            label,
+            rotation=r * 180 / np.pi,
+            ha="center",
+            va="center",
+            **kwargs,
+        )
+
+
 @app.command
 def export(
     path: Path | None = None,
-    industry: Industry | None = None,
+    industry: Industry | None = "一般商工業",
     type: Literal["edinet", "blue-return"] = "edinet",
+    graphviz_layout: str = "sfdp",
+    graphviz_args: str = "",
 ) -> None:
     """Export accounts."""
     matplotlib.rc("font", family="serif", serif="IPAexGothic")
@@ -66,6 +117,8 @@ def export(
         plt.figure(figsize=(40, 40))
     else:
         plt.figure(figsize=(10, 10))
+    plt.box(False)
+    plt.subplots_adjust(left=0, right=1, top=1, bottom=0, wspace=0, hspace=0)
     if path is None:
         path = Path(type)
     if type == "edinet":
@@ -80,29 +133,32 @@ def export(
     G.add_node("Root", label="", abstract=None, title=None, total=None)
     for n in top_nodes:
         G.add_edge("Root", n)
+    print("Generating layout...")
     # dot layout
     try:
-        layout = nx.nx_agraph.graphviz_layout(G, prog="twopi", args='-Gscale="2.0"')
+        layout = nx.nx_agraph.graphviz_layout(
+            G, prog=graphviz_layout, args=graphviz_args
+        )
     except Exception as e:
         warnings.warn(f"Failed to use graphviz layout: {e}", stacklevel=2)
         layout = nx.spring_layout(G)
+    print("Drawing graph...")
     nx.draw_networkx(
         G,
         layout,
         with_labels=False,
         node_color=[
-            "red" if d["abstract"] else "lightblue" for n, d in G.nodes(data=True)
+            "black"
+            if d["abstract"] is None
+            else "red"
+            if d["abstract"]
+            else "lightblue"
+            for n, d in G.nodes(data=True)
         ],
+        node_size=400,
     )
-    nx.draw_networkx_labels(
-        G,
-        layout,
-        nx.get_node_attributes(G, "label"),
-        font_family="IPAexGothic",
-        font_size=8,
-    )
-    plt.axis("off")
-    plt.savefig(path.with_suffix(".png"))
+    draw_networkx_labels_rotated(layout, nx.get_node_attributes(G, "label"))
+    plt.savefig(path.with_suffix(".jpg"), dpi=150)
 
 
 @app.meta.default
