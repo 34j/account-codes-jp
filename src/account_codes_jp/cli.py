@@ -41,9 +41,11 @@ def list(
             G.nodes[n]["label"] = f"{d['label']}[タイトル]"
         if d["total"]:
             G.nodes[n]["label"] = f"[yellow]{d['label']}[/yellow][計]"
+        if d["account_type"]:
+            G.nodes[n]["label"] = f"{d['label']}/[orange1]{d['account_type']}[/orange1]"
         if type == "edinet":
             G.nodes[n]["label"] = (
-                f"{d['label']}/[green]{d['label_etax']}[/green]"
+                f"{d['label']}/[green]{d['label_etax']}[/green]/"
                 f"[sky_blue3]{d['prefix']}:{d['element']}[/sky_blue3]"
             )
     for line in generate_network_text(G, with_labels=True, max_depth=20):

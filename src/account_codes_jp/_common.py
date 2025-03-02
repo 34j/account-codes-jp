@@ -1,4 +1,4 @@
-from typing import Literal, TypeVar
+from typing import Callable, Literal, TypeVar
 
 import networkx as nx
 from strenum import StrEnum
@@ -37,12 +37,14 @@ class AccountType(StrEnum):
         return self in (AccountType.Equity, AccountType.Liability, AccountType.Equity)
 
 
-def get_account_type(G: nx.DiGraph, account: str) -> AccountType | None:
-    ancestors = nx.ancestors(G, account)
-    ancestors_l2 = ancestors[2]
-    if SUNDRY in ancestors_l2:
-        return AccountType.Sundry
-    for account_type in AccountType:
-        if account_type.value in ancestors_l2:
-            return account_type
-    return None
+def get_account_type_factory(G: nx.DiGraph) -> Callable[[str], AccountType | None]:
+    nonabstract_nodes = {
+        d["label"]: n for n, d in G.nodes(data=True) if not d["abstract"]
+    }
+
+    def _(account: str) -> AccountType | None:
+        if account == SUNDRY:
+            return AccountType.Sundry
+        return nonabstract_nodes.get(account, {}).get("account_type")
+
+    return _

@@ -9,6 +9,8 @@ import numpy as np
 import pandas as pd
 from requests_cache import CachedSession
 
+from account_codes_jp._common import AccountType
+
 # from strictly_typed_pandas import DataSet
 
 LOG = getLogger(__name__)
@@ -281,7 +283,6 @@ def get_edinet_accounts(
     df["duration"] = to_bool_or_nan(df["duration"], ["duration"], ["instant"])
     df["debit"] = to_bool_or_nan(df["debit"], ["debit"], ["credit"])
     df = pd.concat([pd.DataFrame([{"depth": 0}]), df], join="outer", ignore_index=True)
-    print(df.columns)
     return edinet_accounts_as_graph(df)
 
 
@@ -320,5 +321,22 @@ def edinet_accounts_as_graph(df: pd.DataFrame) -> nx.DiGraph:
         if ancestors:
             G.add_edge(ancestors[-1], k)
         G.nodes[k]["ancestors"] = ancestors
+        account_type = None
+        ancestor_labels = [G.nodes[a]["label"] for a in ancestors]
+        if "損益計算書" in ancestor_labels:
+            if row["debit"] is AccountType.Expense.debit:
+                account_type = AccountType.Expense
+            elif row["debit"] is AccountType.Revenue.debit:
+                account_type = AccountType.Revenue
+        elif "貸借対照表" in ancestor_labels:
+            for t in [
+                AccountType.Asset,
+                AccountType.Liability,
+                AccountType.Equity,
+            ]:
+                if t.value + "の部" in ancestor_labels:
+                    account_type = t
+                    break
+        G.nodes[k]["account_type"] = account_type
         ancestors.append(k)
     return G

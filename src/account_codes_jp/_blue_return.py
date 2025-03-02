@@ -5,6 +5,8 @@ from typing import Any
 import networkx as nx
 from yaml import safe_load
 
+from ._common import AccountType
+
 
 def from_nested_dict(
     data: Mapping[Any, Mapping[Any, Any] | Sequence[Any]],
@@ -64,7 +66,7 @@ def get_blue_return_accounts() -> nx.DiGraph:
         if len(ancestors) > 2:
             G.nodes[n]["debit"] = ancestors[1] in ["資産", "費用"]
             G.nodes[n]["static"] = ancestors[1] in ["資産", "純資産", "負債"]
-            G.nodes[n]["account_type"] = ancestors[1]
+            G.nodes[n]["account_type"] = AccountType(ancestors[1])
         else:
             G.nodes[n]["debit"] = None
             G.nodes[n]["static"] = None

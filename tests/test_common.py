@@ -1,10 +1,15 @@
-from account_codes_jp import AccountType, get_account_type, get_blue_return_accounts
+from account_codes_jp import (
+    AccountType,
+    get_account_type_factory,
+    get_blue_return_accounts,
+)
 
 
 def test_account_types() -> None:
     G = get_blue_return_accounts()
-    assert get_account_type(G, "現金") == AccountType.Asset
-    assert get_account_type(G, "買掛金") == AccountType.Liability
-    assert get_account_type(G, "元入金") == AccountType.Equity
-    assert get_account_type(G, "消耗品費") == AccountType.Expense
-    assert get_account_type(G, "仕入") == AccountType.Revenue
+    t = get_account_type_factory(G)
+    assert t("現金") == AccountType.Asset
+    assert t("買掛金") == AccountType.Liability
+    assert t("元入金") == AccountType.Equity
+    assert t("消耗品費") == AccountType.Expense
+    assert t("仕入") == AccountType.Revenue
