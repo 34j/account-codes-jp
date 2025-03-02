@@ -189,11 +189,11 @@ def to_bool_or_nan(
     return x
 
 
-def get_etax_accounts(
+def get_edinet_accounts(
     industry: Industry | None = None,
     debug_unique: bool = False,
     skip_non_line_elements: bool = True,
-) -> pd.DataFrame:
+) -> nx.DiGraph:
     """
     EDINETの勘定科目リストのDataFrameを取得する
 
@@ -280,12 +280,14 @@ def get_etax_accounts(
         df[k] = to_bool_or_nan(df[k], ["○"], [np.nan])
     df["duration"] = to_bool_or_nan(df["duration"], ["duration"], ["instant"])
     df["debit"] = to_bool_or_nan(df["debit"], ["debit"], ["credit"])
-    return df
+    df = pd.concat([pd.DataFrame([{"depth": 0}]), df], join="outer", ignore_index=True)
+    print(df.columns)
+    return edinet_accounts_as_graph(df)
 
 
-def etax_accounts_as_graph(df: pd.DataFrame) -> nx.DiGraph:
+def edinet_accounts_as_graph(df: pd.DataFrame) -> nx.DiGraph:
     """
-    get_etax_accounts()の結果をnx.DiGraphに変換する
+    get_edinet_accounts()の結果をnx.DiGraphに変換する
 
     Parameters
     ----------
@@ -317,5 +319,6 @@ def etax_accounts_as_graph(df: pd.DataFrame) -> nx.DiGraph:
         ancestors = ancestors[: row["depth"] - min_depth]
         if ancestors:
             G.add_edge(ancestors[-1], k)
+        G.nodes[k]["ancestors"] = ancestors
         ancestors.append(k)
     return G

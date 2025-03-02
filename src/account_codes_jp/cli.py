@@ -15,8 +15,8 @@ from networkx.readwrite.text import generate_network_text
 from rich import print
 from rich.logging import RichHandler
 
-from ._blue_return import get_blue_return_accounts_as_graph
-from ._edinet import Industry, etax_accounts_as_graph, get_etax_accounts
+from ._blue_return import get_blue_return_accounts
+from ._edinet import Industry, get_edinet_accounts
 
 app = cyclopts.App(name="account-codes-jp")
 app.meta.group_parameters = cyclopts.Group("Session Parameters", sort_key=0)
@@ -29,30 +29,22 @@ def list(
 ) -> None:
     """List accounts."""
     if type == "edinet":
-        df = get_etax_accounts(industry, debug_unique=True)
-        G = etax_accounts_as_graph(df)
+        G = get_edinet_accounts(industry, debug_unique=True)
     elif type == "blue-return":
-        G = get_blue_return_accounts_as_graph()
+        G = get_blue_return_accounts()
     else:
         raise ValueError(f"Unknown account type: {type}")
     for n, d in G.nodes(data=True):
         if d["abstract"]:
-            G.nodes[n]["label"] = "[red]" + d["label"] + "[/red]"
+            G.nodes[n]["label"] = f"[red]{d['label']}[/red]"
         if d["title"]:
-            G.nodes[n]["label"] += "[タイトル]"
+            G.nodes[n]["label"] = f"{d['label']}[タイトル]"
         if d["total"]:
-            G.nodes[n]["label"] = "[yellow]" + d["label"] + "[/yellow][計]"
+            G.nodes[n]["label"] = f"[yellow]{d['label']}[/yellow][計]"
         if type == "edinet":
-            G.nodes[n]["label"] += (
-                "/"
-                + "[green]"
-                + d["label_etax"]
-                + "[/green]"
-                + "/[sky_blue3]"
-                + d["prefix"]
-                + ":"
-                + d["element"]
-                + "[/sky_blue3]"
+            G.nodes[n]["label"] = (
+                f"{d['label']}/[green]{d['label_etax']}[/green]"
+                f"[sky_blue3]{d['prefix']}:{d['element']}[/sky_blue3]"
             )
     for line in generate_network_text(G, with_labels=True, max_depth=20):
         print(line)
@@ -123,17 +115,11 @@ def export(
     if path is None:
         path = Path(type)
     if type == "edinet":
-        df = get_etax_accounts(industry)
-        df.to_csv(path.with_suffix(".csv"), index=False)
-        G = etax_accounts_as_graph(df)
+        G = get_edinet_accounts(industry)
     elif type == "blue-return":
-        G = get_blue_return_accounts_as_graph()
+        G = get_blue_return_accounts()
     else:
         raise ValueError(f"Unknown account type: {type}")
-    top_nodes = [n for n, d in G.in_degree() if d == 0]
-    G.add_node("Root", label="", abstract=None, title=None, total=None)
-    for n in top_nodes:
-        G.add_edge("Root", n)
     print("Generating layout...")
     # dot layout
     try:

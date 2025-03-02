@@ -1,12 +1,8 @@
 __version__ = "0.0.1"
 
-from ._common import Account, AccountSundry, AccountType
-from ._edinet import (
-    ETaxAccountProtocol,
-    Industry,
-    etax_accounts_as_graph,
-    get_etax_accounts,
-)
+from ._blue_return import get_blue_return_accounts
+from ._common import Account, AccountSundry, AccountType, get_account_type
+from ._edinet import ETaxAccountProtocol, Industry, get_edinet_accounts
 
 __all__ = [
     "Account",
@@ -14,6 +10,7 @@ __all__ = [
     "AccountType",
     "ETaxAccountProtocol",
     "Industry",
-    "etax_accounts_as_graph",
-    "get_etax_accounts",
+    "get_account_type",
+    "get_blue_return_accounts",
+    "get_edinet_accounts",
 ]
