@@ -52,13 +52,29 @@ Install this via pip (or your favourite package manager):
 
 ```shell
 $ account-codes-jp list --industry "一般商工業"
-╟── 貸借対照表[タイトル]/貸借対照表/jppfs_cor:BalanceSheetAbstract
-╎   ├─╼ 貸借対照表/貸借対照表/jppfs_cor:BalanceSheetTable
-╎   └─╼ 貸借対照表/貸借対照表/jppfs_cor:BalanceSheetLineItems
-╎       ├─╼ 資産の部[タイトル]/資産の部/jppfs_cor:AssetsAbstract
-╎       │   ├─╼ 流動資産[タイトル]/流動資産/jppfs_cor:CurrentAssetsAbstract
-╎       │   │   ├─╼ 現金及び預金/現金及び預金/jppfs_cor:CashAndDeposits
+    ├─╼ 貸借対照表/貸借対照表/jppfs_cor:BalanceSheetLineItems
+    │   ├─╼ 資産の部[タイトル]/資産の部/jppfs_cor:AssetsAbstract
+    │   │   ├─╼ 流動資産[タイトル]/資産/流動資産/jppfs_cor:CurrentAssetsAbstract
+    │   │   │   ├─╼ 現金及び預金/資産/現金及び預金/jppfs_cor:CashAndDeposits
+    │   │   │   ├─╼ 受取手形及び売掛金/資産/受取手形及び売掛金/jppfs_cor:NotesAndAccountsReceivableTrade
+    │   │   │   │   ├─╼ 貸倒引当金/資産/貸倒引当金/jppfs_cor:AllowanceForDoubtfulAccountsNotesAndAccountsReceivableTrade
+    │   │   │   │   └─╼ 受取手形及び売掛金（純額）/資産/受取手形及び売掛金（純額）/jppfs_cor:NotesAndAccountsReceivableTradeNet
 ...
+```
+
+```shell
+$ account-codes-jp list --type blue-return
+    ├─╼ 賃借対照表[タイトル]
+    │   ├─╼ 資産[タイトル]/資産
+    │   │   ├─╼ 資産[タイトル]/資産
+    │   │   │   ├─╼ 現金/資産
+    │   │   │   ├─╼ 当座預金/資産
+```
+
+```python
+G = get_blue_return_accounts()
+t = get_account_type_factory(G)
+assert t("現金") == AccountType.Asset
 ```
 
 ## Notes
