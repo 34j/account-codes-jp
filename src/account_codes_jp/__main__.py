@@ -2,4 +2,4 @@
 
 from .cli import app
 
-app(prog_name="account-codes-jp")
+app.meta()
