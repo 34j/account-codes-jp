@@ -64,9 +64,9 @@ def get_blue_return_accounts() -> nx.DiGraph:
         G.nodes[n]["title"] = depth <= 4
         G.nodes[n]["total"] = False
         if len(ancestors) > 2:
-            G.nodes[n]["debit"] = ancestors[1] in ["資産", "費用"]
-            G.nodes[n]["static"] = ancestors[1] in ["資産", "純資産", "負債"]
-            G.nodes[n]["account_type"] = AccountType(ancestors[1])
+            G.nodes[n]["debit"] = ancestors[1] in {"資産", "費用"}
+            G.nodes[n]["static"] = ancestors[1] in {"収益", "純資産", "負債"}
+            G.nodes[n]["account_type"] = AccountType(G.nodes[ancestors[2]]["label"])
         else:
             G.nodes[n]["debit"] = None
             G.nodes[n]["static"] = None

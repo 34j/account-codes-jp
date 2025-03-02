@@ -27,24 +27,26 @@ class AccountType(StrEnum):
         """借方(左)ならTrue, 貸方(右)ならFalse, 諸口ならNone"""
         if self == AccountType.Sundry:
             return None
-        return self in (AccountType.Asset, AccountType.Revenue)
+        return self in (AccountType.Asset, AccountType.Expense)
 
     @property
     def static(self) -> bool | None:
         """賃借対照表ならTrue, 損益計算書ならFalse, 諸口ならNone"""
         if self == AccountType.Sundry:
             return None
-        return self in (AccountType.Equity, AccountType.Liability, AccountType.Equity)
+        return self in (AccountType.Equity, AccountType.Liability, AccountType.Asset)
 
 
 def get_account_type_factory(G: nx.DiGraph) -> Callable[[str], AccountType | None]:
     nonabstract_nodes = {
-        d["label"]: n for n, d in G.nodes(data=True) if not d["abstract"]
+        d["label"]: d.get("account_type")
+        for _, d in G.nodes(data=True)
+        if not d["abstract"]
     }
 
     def _(account: str) -> AccountType | None:
         if account == SUNDRY:
             return AccountType.Sundry
-        return nonabstract_nodes.get(account, {}).get("account_type")
+        return nonabstract_nodes.get(account)
 
     return _
