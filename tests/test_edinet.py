@@ -8,4 +8,4 @@ def test_get():
     assert t("買掛金") == AccountType.Liability
     assert t("資本金") == AccountType.Equity
     assert t("消耗品費") == AccountType.Expense
-    assert t("売上") == AccountType.Revenue
+    assert t("売上高") == AccountType.Revenue
