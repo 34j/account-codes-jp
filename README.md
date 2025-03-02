@@ -72,6 +72,8 @@ $ account-codes-jp list --type blue-return
 ```
 
 ```python
+from account_codes_jp import get_blue_return_accounts, get_account_type_factory, AccountType
+
 G = get_blue_return_accounts()
 t = get_account_type_factory(G)
 assert t("現金") == AccountType.Asset
