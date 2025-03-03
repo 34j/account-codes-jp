@@ -47,7 +47,7 @@ def list(
                 f"{d['label']}/[green]{d['label_etax']}[/green]/"
                 f"[sky_blue3]{d['prefix']}:{d['element']}[/sky_blue3]"
             )
-    for i, line in enumerate(generate_network_text(G, with_labels=True, max_depth=20)):
+    for i, line in enumerate(generate_network_text(G, with_labels=True)):
         if i <= 0:
             continue
         print(line)
