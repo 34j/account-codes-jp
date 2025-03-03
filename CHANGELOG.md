@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.1.1 (2025-03-03)
+
+### Bug fixes
+
+- Import japanize_matplotlib (#17) ([`a364075`](https://github.com/34j/account-codes-jp/commit/a364075a1e4d87b4ed3b8ea9d8360ca5592e3159))
+
 ## v0.1.0 (2025-03-02)
 
 ### Features
