@@ -1,6 +1,6 @@
 from collections.abc import Mapping, Sequence
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 import networkx as nx
 from yaml import safe_load
@@ -42,9 +42,16 @@ def from_nested_dict(
     return G
 
 
-def get_blue_return_accounts() -> nx.DiGraph:
+def get_blue_return_accounts(
+    patch: Callable[[nx.DiGraph], nx.DiGraph] | None = None,
+) -> nx.DiGraph:
     """
     Get the blue return accounts as a graph
+
+    Parameters
+    ----------
+    patch : Callable[[nx.DiGraph], nx.DiGraph], optional
+        A function that takes the graph and returns the patched graph, by default None
 
     Returns
     -------
@@ -55,6 +62,8 @@ def get_blue_return_accounts() -> nx.DiGraph:
     with (Path(__file__).parent / "_blue_return.yaml").open(encoding="utf-8") as f:
         d = safe_load(f)
     G = from_nested_dict(d)
+    if patch is not None:
+        G = patch(G)
     root = next(iter(nx.topological_sort(G)))
     for n in G.nodes:
         ancestors = nx.shortest_path(G, root, n)
