@@ -37,16 +37,73 @@ class AccountType(StrEnum):
         return self in (AccountType.Equity, AccountType.Liability, AccountType.Asset)
 
 
-def get_account_type_factory(G: nx.DiGraph) -> Callable[[str], AccountType | None]:
+def get_account_ambiguous_factory(G: nx.DiGraph) -> Callable[[str], str]:
+    """
+    Estimate the correct account name from a possibly ambiguous account name.
+
+    Uses both literal and japanese phonetic matching.
+
+    Parameters
+    ----------
+    G : nx.DiGraph
+        The account tree
+
+    Returns
+    -------
+    Callable[[str], str]
+        A function that takes an account name
+        and returns the closest match from the account tree
+
+    """
+    from pykakasi import kakasi
+    from rapidfuzz import fuzz
+    from rapidfuzz.process import extractOne
+
+    kks = kakasi()
+
+    def processor(s: str) -> str:
+        s = str(s)
+        return s + "|" + "".join([item["hira"] for item in kks.convert(s)])
+
+    accounts = list(nx.get_node_attributes(G, "label").values())
+    return lambda account: extractOne(
+        account, accounts, processor=processor, scorer=fuzz.QRatio
+    )[0]
+
+
+def get_account_type_factory(
+    G: nx.DiGraph, ambiguous: bool = False
+) -> Callable[[str], AccountType | None]:
+    """
+    Get the account type from the account name
+
+    Parameters
+    ----------
+    G : nx.DiGraph
+        The account tree
+    ambiguous : bool, optional
+        Whether to use the ambiguous account name resolver, by default False
+
+    Returns
+    -------
+    Callable[[str], AccountType | None]
+        A function that takes an account name and returns the
+        account type or None if the account is not found
+
+    """
     nonabstract_nodes = {
         d["label"]: d.get("account_type")
         for _, d in G.nodes(data=True)
         if not d["abstract"]
     }
+    if ambiguous:
+        get_amb = get_account_ambiguous_factory(G)
 
     def _(account: str) -> AccountType | None:
         if account == SUNDRY:
             return AccountType.Sundry
+        if ambiguous:
+            account = get_amb(account)
         return nonabstract_nodes.get(account)
 
     return _
