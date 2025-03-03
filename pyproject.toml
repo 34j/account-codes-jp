@@ -58,6 +58,12 @@ sphinx = { version = ">=4.0", python = ">=3.11" }
 furo = { version = ">=2023.5.20", python = ">=3.11" }
 sphinx-autobuild = { version = ">=2024.0.0", python = ">=3.11" }
 
+[tool.poetry.group.graphviz.dependencies]
+pygraphviz = "^1.14"
+
+[tool.poetry.group.graphviz]
+optional = true
+
 [tool.ruff]
 target-version = "py39"
 line-length = 88

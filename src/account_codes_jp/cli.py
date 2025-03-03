@@ -5,7 +5,6 @@ from pathlib import Path
 from typing import Annotated, Any, Literal
 
 import cyclopts
-import matplotlib
 import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
@@ -109,23 +108,29 @@ def export(
     graphviz_args: str = "",
 ) -> None:
     """Export accounts."""
-    matplotlib.rc("font", family="serif", serif="IPAexGothic")
+    if path is None:
+        path = Path(type)
+    import japanize_matplotlib
+
+    japanize_matplotlib.japanize()
     if type == "edinet":
         plt.figure(figsize=(40, 40))
     else:
         plt.figure(figsize=(6.5, 6.5))
+
+    # remove margins
     plt.box(False)
     plt.subplots_adjust(left=0, right=1, top=1, bottom=0, wspace=0, hspace=0)
-    if path is None:
-        path = Path(type)
+
+    # get accounts
     if type == "edinet":
         G = get_edinet_accounts(industry)
     elif type == "blue-return":
         G = get_blue_return_accounts()
     else:
         raise ValueError(f"Unknown account type: {type}")
+
     print("Generating layout...")
-    # dot layout
     try:
         layout = nx.nx_agraph.graphviz_layout(
             G, prog=graphviz_layout, args=graphviz_args
@@ -133,6 +138,7 @@ def export(
     except Exception as e:
         warnings.warn(f"Failed to use graphviz layout: {e}", stacklevel=2)
         layout = nx.spring_layout(G)
+
     print("Drawing graph...")
     nx.draw_networkx_edges(G, layout, edge_color="white", width=3, arrowsize=1)
     nx.draw_networkx(
