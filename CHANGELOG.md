@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.2.0 (2025-03-03)
+
+### Features
+
+- Add ambiguous factory (#18) ([`71fdab9`](https://github.com/34j/account-codes-jp/commit/71fdab9f05328a5204c78eaef0ecf1246fce9fbf))
+
 ## v0.1.1 (2025-03-03)
 
 ### Bug fixes
