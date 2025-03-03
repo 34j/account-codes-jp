@@ -48,6 +48,7 @@ setuptools = "^75.8.2"
 pytest = "^8.0.0"
 pytest-cov = "^5.0.0"
 ipykernel = "^6.29.5"
+pygraphviz = "^1.14"
 
 [tool.poetry.group.docs]
 optional = true
