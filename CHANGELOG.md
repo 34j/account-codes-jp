@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.3.0 (2025-03-03)
+
+### Features
+
+- Add patch keyword in `get_blue_return_accounts` (#19) ([`310d9a1`](https://github.com/34j/account-codes-jp/commit/310d9a1a32baeeb94a3b403bfe962e23a87d0ccf))
+
 ## v0.2.0 (2025-03-03)
 
 ### Features
