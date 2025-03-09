@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.3.3 (2025-03-09)
+
+### Bug fixes
+
+- Update dependency setuptools to v75.9.1 (#23) ([`8ed3914`](https://github.com/34j/account-codes-jp/commit/8ed3914ddb721a68a4b2c1f0f3016e857b2a906e))
+
 ## v0.3.2 (2025-03-08)
 
 ### Bug fixes
