@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.4.0 (2025-03-15)
+
+### Features
+
+- Add get_node_from_label (#27) ([`9f37689`](https://github.com/34j/account-codes-jp/commit/9f3768972a2872d44f86adbcf2eecb381944fa4e))
+
 ## v0.3.4 (2025-03-12)
 
 ### Bug fixes
