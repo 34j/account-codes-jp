@@ -68,9 +68,10 @@ def get_blue_return_accounts(
     for n in G.nodes:
         ancestors = nx.shortest_path(G, root, n)
         depth = len(ancestors)
+        successors = list(G.successors(n))
         G.nodes[n]["ancestors"] = ancestors
-        G.nodes[n]["abstract"] = depth <= 4
-        G.nodes[n]["title"] = depth <= 4
+        G.nodes[n]["abstract"] = len(successors) > 0
+        G.nodes[n]["title"] = depth < 5
         G.nodes[n]["total"] = False
         if len(ancestors) > 2:
             G.nodes[n]["debit"] = ancestors[1] in {"資産", "費用"}
