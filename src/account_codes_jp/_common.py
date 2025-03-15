@@ -1,4 +1,6 @@
-from typing import Callable, Literal, TypeVar
+import warnings
+from collections.abc import Mapping
+from typing import Any, Callable, Literal, TypeVar
 
 import networkx as nx
 from strenum import StrEnum
@@ -69,6 +71,46 @@ def get_account_ambiguous_factory(G: nx.DiGraph) -> Callable[[str], str]:
     return lambda account: extractOne(
         account, accounts, processor=processor, scorer=fuzz.QRatio
     )[0]
+
+
+def get_node_from_label(
+    G: nx.DiGraph,
+    label: str,
+    cond: Callable[[Mapping[Any, Any]], bool] | None = None,
+    multiple: bool = False,
+) -> Any:
+    """
+    Get the node from the label and condition
+
+    Parameters
+    ----------
+    G : nx.DiGraph
+        The account tree
+    label : str
+        The label of the node
+    cond : Callable[Mapping[Any, Any], bool]
+        The condition to satisfy
+    multiple : bool, optional
+        Whether to return multiple nodes, by default False
+
+    Returns
+    -------
+    Any
+        The node that satisfies the condition
+
+    """
+    nodes = [
+        n
+        for n, d in G.nodes.data()
+        if (d["label"] == label and (cond(n) if cond is not None else True))
+    ]
+    if not nodes:
+        raise ValueError(f"Node with label {label} not found")
+    if multiple:
+        return nodes
+    if len(nodes) > 1:
+        warnings.warn(f"Multiple nodes with label {label} found", stacklevel=2)
+    return nodes[0]
 
 
 def get_account_type_factory(
