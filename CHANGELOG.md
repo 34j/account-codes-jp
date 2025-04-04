@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.4.7 (2025-04-04)
+
+### Bug fixes
+
+- Update dependency rapidfuzz to v3.13.0 (#40) ([`405b2a1`](https://github.com/34j/account-codes-jp/commit/405b2a111ead170bdf1850d92d4a800b169752ad))
+
 ## v0.4.6 (2025-04-04)
 
 ### Bug fixes
