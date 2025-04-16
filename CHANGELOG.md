@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.4.8 (2025-04-16)
+
+### Bug fixes
+
+- Update dependency cyclopts to v3.13.0 (#44) ([`a6a30d3`](https://github.com/34j/account-codes-jp/commit/a6a30d31129b6965457c8d23c55e854ac86f8645))
+
 ## v0.4.7 (2025-04-04)
 
 ### Bug fixes
