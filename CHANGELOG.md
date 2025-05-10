@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.4.13 (2025-05-10)
+
+### Bug fixes
+
+- Update dependency matplotlib to v3.10.3 (#57) ([`97f6a46`](https://github.com/34j/account-codes-jp/commit/97f6a46e1928711132b8dd861abc4226196eead9))
+
 ## v0.4.12 (2025-05-03)
 
 ### Bug fixes
