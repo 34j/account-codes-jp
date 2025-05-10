@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.4.14 (2025-05-10)
+
+### Bug fixes
+
+- Update dependency scipy to v1.15.3 (#58) ([`e0eeb3f`](https://github.com/34j/account-codes-jp/commit/e0eeb3f13fdc86bad3e4954e25dff2a9b4443170))
+
 ## v0.4.13 (2025-05-10)
 
 ### Bug fixes
