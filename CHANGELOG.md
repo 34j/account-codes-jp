@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.4.18 (2025-06-05)
+
+### Bug fixes
+
+- Update dependency pandas to v2.3.0 (#72) ([`672cd21`](https://github.com/34j/account-codes-jp/commit/672cd210ea8a2c263c1d02792f4426bb7fe19919))
+
 ## v0.4.17 (2025-05-26)
 
 ### Bug fixes
