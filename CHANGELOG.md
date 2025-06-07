@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.4.20 (2025-06-07)
+
+### Bug fixes
+
+- Update dependency networkx to v3.5 (#74) ([`a499625`](https://github.com/34j/account-codes-jp/commit/a4996252d48790829ea0499c18ebd5384a3e1487))
+
 ## v0.4.19 (2025-06-06)
 
 ### Bug fixes
