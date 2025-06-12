@@ -4,7 +4,7 @@ requires = [ "poetry-core>=1.0.0" ]
 
 [tool.poetry]
 name = "account-codes-jp"
-version = "0.4.21"
+version = "0.4.22"
 description = "e-Tax / EDINETタクソノミ / 青色申告 の勘定科目(コード)表のラッパー (非公式)"
 authors = [ "34j <34j.github@proton.me>" ]
 license = "AGPL-3.0-only"
