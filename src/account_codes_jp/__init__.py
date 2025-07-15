@@ -1,4 +1,4 @@
-__version__ = "0.4.26"
+__version__ = "0.4.27"
 
 from ._blue_return import get_blue_return_accounts
 from ._common import (
