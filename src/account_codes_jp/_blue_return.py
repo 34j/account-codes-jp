@@ -38,7 +38,7 @@ def from_nested_dict(
             if isinstance(grandchildren, Mapping):
                 q.append((id_child, grandchildren))
             elif isinstance(grandchildren, list):
-                q.append((id_child, {k: None for k in grandchildren}))
+                q.append((id_child, dict.fromkeys(grandchildren)))
     return G
 
 
