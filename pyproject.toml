@@ -31,7 +31,7 @@ account-codes-jp = "account_codes_jp.cli:app.meta"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-rich = "^13.9.4"
+rich = "^14.0.0"
 pandas = "^2.2.3"
 networkx = "^3.4.2"
 scipy = "^1.15.2"
