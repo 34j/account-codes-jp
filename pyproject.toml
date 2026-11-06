@@ -7,7 +7,7 @@ name = "account-codes-jp"
 version = "0.4.32"
 description = "e-Tax / EDINETタクソノミ / 青色申告 の勘定科目(コード)表のラッパー (非公式)"
 readme = "README.md"
-license = "GPL-3.0-only"
+license = "AGPL-3.0-only"
 authors = [
   { name = "34j" },
 ]
