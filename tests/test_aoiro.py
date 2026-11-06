@@ -6,6 +6,7 @@ from account_codes_jp import (
     get_account_type_factory,
     get_blue_return_accounts,
 )
+from account_codes_jp._blue_return import from_nested_dict  # noqa: PLC2701
 
 
 @pytest.mark.parametrize(
@@ -27,3 +28,14 @@ def test_amb() -> None:
     a = get_account_ambiguous_factory(G)
     assert a("定!!!預金") == "定期預金"
     assert a("しんぶんひ") == "新聞図書費"
+
+
+def test_account_type_properties() -> None:
+    assert AccountType.Asset.debit is True
+    assert AccountType.Equity.static is True
+
+
+def test_from_nested_dict_with_list() -> None:
+    G = from_nested_dict({"parent": ["child"]})
+    assert G.nodes[2]["label"] == "child"
+    assert list(G.predecessors(2)) == [1]

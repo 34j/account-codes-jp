@@ -83,6 +83,9 @@ lint.extend-ignore = [
   "RUF002",
   "S404",
 ]
+lint.extend-per-file-ignores."/**/tests/**/*" = [
+  "S603", # Test subprocess uses a fixed executable and argument list.
+]
 
 [tool.pyproject-fmt]
 max_supported_python = "3.14"
