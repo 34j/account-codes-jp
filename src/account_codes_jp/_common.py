@@ -1,6 +1,6 @@
 import warnings
-from collections.abc import Mapping
-from typing import Any, Callable, Literal, TypeVar
+from collections.abc import Callable, Mapping
+from typing import Any, Literal, TypeVar
 
 import networkx as nx
 from strenum import StrEnum
@@ -26,17 +26,17 @@ class AccountType(StrEnum):
 
     @property
     def debit(self) -> bool | None:
-        """借方(左)ならTrue, 貸方(右)ならFalse, 諸口ならNone"""
+        """借方(左)ならTrue, 貸方(右)ならFalse, 諸口ならNone."""
         if self == AccountType.Sundry:
             return None
-        return self in (AccountType.Asset, AccountType.Expense)
+        return self in {AccountType.Asset, AccountType.Expense}
 
     @property
     def static(self) -> bool | None:
-        """賃借対照表ならTrue, 損益計算書ならFalse, 諸口ならNone"""
+        """賃借対照表ならTrue, 損益計算書ならFalse, 諸口ならNone."""
         if self == AccountType.Sundry:
             return None
-        return self in (AccountType.Equity, AccountType.Liability, AccountType.Asset)
+        return self in {AccountType.Equity, AccountType.Liability, AccountType.Asset}
 
 
 def get_account_ambiguous_factory(G: nx.DiGraph) -> Callable[[str], str]:
@@ -68,9 +68,7 @@ def get_account_ambiguous_factory(G: nx.DiGraph) -> Callable[[str], str]:
         return s + "|" + "".join([item["hira"] for item in kks.convert(s)])
 
     accounts = list(nx.get_node_attributes(G, "label").values())
-    return lambda account: extractOne(
-        account, accounts, processor=processor, scorer=fuzz.QRatio
-    )[0]
+    return lambda account: extractOne(account, accounts, processor=processor, scorer=fuzz.QRatio)[0]
 
 
 def get_node_from_label(
@@ -80,7 +78,7 @@ def get_node_from_label(
     multiple: bool = False,
 ) -> Any:
     """
-    Get the node from the label and condition
+    Get the node from the label and condition.
 
     Parameters
     ----------
@@ -117,7 +115,7 @@ def get_account_type_factory(
     G: nx.DiGraph, ambiguous: bool = False
 ) -> Callable[[str], AccountType | None]:
     """
-    Get the account type from the account name
+    Get the account type from the account name.
 
     Parameters
     ----------
@@ -134,9 +132,7 @@ def get_account_type_factory(
 
     """
     nonabstract_nodes = {
-        d["label"]: d.get("account_type")
-        for _, d in G.nodes(data=True)
-        if not d["abstract"]
+        d["label"]: d.get("account_type") for _, d in G.nodes(data=True) if not d["abstract"]
     }
     if ambiguous:
         get_amb = get_account_ambiguous_factory(G)
