@@ -1,6 +1,6 @@
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 import networkx as nx
 from yaml import safe_load
@@ -38,7 +38,7 @@ def from_nested_dict(
             if isinstance(grandchildren, Mapping):
                 q.append((id_child, grandchildren))
             elif isinstance(grandchildren, list):
-                q.append((id_child, {k: None for k in grandchildren}))
+                q.append((id_child, dict.fromkeys(grandchildren)))
     return G
 
 
@@ -46,7 +46,7 @@ def get_blue_return_accounts(
     patch: Callable[[nx.DiGraph], nx.DiGraph] | None = None,
 ) -> nx.DiGraph:
     """
-    Get the blue return accounts as a graph
+    Get the blue return accounts as a graph.
 
     Parameters
     ----------
