@@ -50,7 +50,7 @@ scripts.account-codes-jp = "account_codes_jp.cli:app"
 dev = [
   "coverage",
   "ipykernel",
-  "packaging-34j[test]",
+  "packaging-34j[test]>=1.1.8",
   "pytest",
   "pytest-cov",
   "ty",

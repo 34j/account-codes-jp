@@ -6,7 +6,7 @@ from account_codes_jp import (
     get_account_type_factory,
     get_blue_return_accounts,
 )
-from account_codes_jp._blue_return import from_nested_dict  # noqa: PLC2701
+from account_codes_jp._blue_return import from_nested_dict
 
 
 @pytest.mark.parametrize(
