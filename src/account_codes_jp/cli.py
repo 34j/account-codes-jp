@@ -132,9 +132,7 @@ def export(
 
     print("Generating layout...")
     try:
-        layout = nx.nx_agraph.graphviz_layout(
-            G, prog=graphviz_layout, args=graphviz_args
-        )
+        layout = nx.nx_agraph.graphviz_layout(G, prog=graphviz_layout, args=graphviz_args)
     except Exception as e:
         warnings.warn(f"Failed to use graphviz layout: {e}", stacklevel=2)
         layout = nx.spring_layout(G)
@@ -146,17 +144,11 @@ def export(
         layout,
         with_labels=False,
         node_color=[
-            "black"
-            if d["abstract"] is None
-            else "red"
-            if d["abstract"]
-            else "lightblue"
+            "black" if d["abstract"] is None else "red" if d["abstract"] else "lightblue"
             for n, d in G.nodes(data=True)
         ],
     )
-    path_effects = [
-        patheffects.withStroke(linewidth=3, foreground="white", capstyle="round")
-    ]
+    path_effects = [patheffects.withStroke(linewidth=3, foreground="white", capstyle="round")]
     draw_networkx_labels_rotated(
         layout,
         nx.get_node_attributes(G, "label"),

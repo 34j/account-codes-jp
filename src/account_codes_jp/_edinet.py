@@ -104,39 +104,41 @@ class ETaxAccountProtocol(Protocol):
     array(['貸借対照表'], dtype=object)"""
     total: bool
     """EDINETの勘定科目リストで用途区分が合計と使用できる"""
-    account_type: Literal[
-        None,
-        "資産",
-        "流動資産",
-        "固定資産",
-        "有形固定資産",
-        "無形固定資産",
-        "投資その他の資産",
-        "繰延資産",
-        "負債",
-        "流動負債",
-        "固定負債",
-        "特別法上の準備金等",
-        "純資産",
-        "株主資本",
-        "資本金",
-        "資本剰余金",
-        "利益剰余金",
-        "評価・換算差額等",
-        "新株予約権",
-        "売上高",
-        "売上原価",
-        "販売費及び一般管理費(売上原価)",
-        "損益",
-        "その他",
-        "販売費及び一般管理費",
-        "営業外収益",
-        "営業外費用",
-        "特別利益",
-        "特別損失",
-        "収益",
-        "費用",
-    ]
+    account_type: (
+        Literal[
+            "資産",
+            "流動資産",
+            "固定資産",
+            "有形固定資産",
+            "無形固定資産",
+            "投資その他の資産",
+            "繰延資産",
+            "負債",
+            "流動負債",
+            "固定負債",
+            "特別法上の準備金等",
+            "純資産",
+            "株主資本",
+            "資本金",
+            "資本剰余金",
+            "利益剰余金",
+            "評価・換算差額等",
+            "新株予約権",
+            "売上高",
+            "売上原価",
+            "販売費及び一般管理費(売上原価)",
+            "損益",
+            "その他",
+            "販売費及び一般管理費",
+            "営業外収益",
+            "営業外費用",
+            "特別利益",
+            "特別損失",
+            "収益",
+            "費用",
+        ]
+        | None
+    )
     """EDINETの勘定科目リストで使用されている勘定科目を財務諸表規則に基づき区分したもの"""
     code: str
     """貸借対照表のCSV形式データを作成するのに使用する勘定科目コード"""
@@ -144,44 +146,46 @@ class ETaxAccountProtocol(Protocol):
     """EDINETの勘定科目リストで使用されている勘定科目及び勘定科目コードに対応する公表用e-Tax勘定科目（日本語）"""
     label_etax_en: str
     """EDINETの勘定科目リストで使用されている勘定科目及び勘定科目コードに対応する公表用e-Tax勘定科目（日本語）"""
-    etax: Literal[
-        None,
-        "資産",
-        "流動資産",
-        "固定資産",
-        "有形固定資産",
-        "無形固定資産",
-        "投資その他の資産",
-        "繰延資産",
-        "負債",
-        "流動負債",
-        "固定負債",
-        "特別法上の準備金等",
-        "純資産",
-        "株主資本",
-        "資本金",
-        "資本剰余金",
-        "利益剰余金",
-        "評価・換算差額等",
-        "新株予約権",
-        "売上高",
-        "売上原価",
-        "損益",
-        "その他",
-        "販売費及び一般管理費",
-        "営業外収益",
-        "営業外費用",
-        "特別利益",
-        "特別損失",
-    ]
+    etax: (
+        Literal[
+            "資産",
+            "流動資産",
+            "固定資産",
+            "有形固定資産",
+            "無形固定資産",
+            "投資その他の資産",
+            "繰延資産",
+            "負債",
+            "流動負債",
+            "固定負債",
+            "特別法上の準備金等",
+            "純資産",
+            "株主資本",
+            "資本金",
+            "資本剰余金",
+            "利益剰余金",
+            "評価・換算差額等",
+            "新株予約権",
+            "売上高",
+            "売上原価",
+            "損益",
+            "その他",
+            "販売費及び一般管理費",
+            "営業外収益",
+            "営業外費用",
+            "特別利益",
+            "特別損失",
+        ]
+        | None
+    )
     """e-Taxの勘定科目を財務諸表規則に基づき区分したもの"""
 
 
 def to_bool_or_nan(
-    x: "pd.Series[str]",
+    x: "pd.Series",
     true_values: Sequence[Any],
     false_values: Sequence[Any],
-) -> "pd.Series[Any]":
+) -> "pd.Series":
     true_idx = x.isin(true_values)
     false_idx = x.isin(false_values)
     x = x.copy()
@@ -197,7 +201,7 @@ def get_edinet_accounts(
     skip_non_line_elements: bool = True,
 ) -> nx.DiGraph:
     """
-    EDINETの勘定科目リストのDataFrameを取得する
+    EDINETの勘定科目リストのDataFrameを取得する.
 
     Parameters
     ----------
@@ -241,7 +245,7 @@ def get_edinet_accounts(
                     )
                 )
     df = pd.concat(dfs, ignore_index=True)
-    df.rename(
+    df = df.rename(
         columns={
             "業種": "industry",
             "科目分類": "grounded",
@@ -267,7 +271,6 @@ def get_edinet_accounts(
             "e-Tax対応勘定科目（英語）": "label_etax_en",
             "e-Tax勘定科目区分": "etax",
         },
-        inplace=True,
         errors="raise",
     )
     if debug_unique:
@@ -288,7 +291,7 @@ def get_edinet_accounts(
 
 def edinet_accounts_as_graph(df: pd.DataFrame) -> nx.DiGraph:
     """
-    get_edinet_accounts()の結果をnx.DiGraphに変換する
+    get_edinet_accounts()の結果をnx.DiGraphに変換する.
 
     Parameters
     ----------
@@ -314,9 +317,7 @@ def edinet_accounts_as_graph(df: pd.DataFrame) -> nx.DiGraph:
         if row["label"] not in G.nodes:
             G.add_node(k, **row.to_dict())
         if row["depth"] > len(ancestors) + 1 + min_depth:
-            raise AssertionError(
-                f"{k}: depth: {row['depth']}, depth_prev: {len(ancestors)}"
-            )
+            raise AssertionError(f"{k}: depth: {row['depth']}, depth_prev: {len(ancestors)}")
         ancestors = ancestors[: row["depth"] - min_depth]
         if ancestors:
             G.add_edge(ancestors[-1], k)

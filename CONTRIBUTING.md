@@ -46,10 +46,10 @@ Ready to contribute? Here's how to set yourself up for local development.
    $ git clone git@github.com:your_name_here/account-codes-jp.git
    ```
 
-3. Install the project dependencies with [Poetry](https://python-poetry.org):
+3. Install the project dependencies with [uv](https://docs.astral.sh/uv/):
 
    ```shell
-   $ poetry install
+   $ uv sync --all-extras
    ```
 
 4. Create a branch for local development:
@@ -63,7 +63,7 @@ Ready to contribute? Here's how to set yourself up for local development.
 5. When you're done making changes, check that your changes pass our tests:
 
    ```shell
-   $ poetry run pytest
+   $ uv run pytest
    ```
 
 6. Linting is done through [pre-commit](https://pre-commit.com). Provided you have the tool installed globally, you can run them all as one-off:
@@ -86,7 +86,7 @@ Ready to contribute? Here's how to set yourself up for local development.
    $ git push origin name-of-your-bugfix-or-feature
    ```
 
-   Note: the commit message should follow [the conventional commits](https://www.conventionalcommits.org). We run [`commitlint` on CI](https://github.com/marketplace/actions/commit-linter) to validate it, and if you've installed pre-commit hooks at the previous step, the message will be checked at commit time.
+   Note: the commit message should follow [the conventional commits](https://www.conventionalcommits.org).
 
 8. Submit a pull request through the GitHub website or using the GitHub CLI (if you have it installed):
 
