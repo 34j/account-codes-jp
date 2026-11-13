@@ -59,7 +59,7 @@ docs = [
   "packaging-34j[docs]",
 ]
 graphviz = [
-  "pygraphviz>=1.14",
+  "pygraphviz>=2.0.4",
 ]
 
 [tool.ruff]
